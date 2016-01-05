@@ -56,6 +56,8 @@ var docs = createSubsections(list);
 
   <script>examples=<%- JSON.stringify(opts.examples) %>;</script>
 
+
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.js"></script>
   <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/examples.js"></script>
   <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/script.js"></script>
@@ -76,7 +78,7 @@ var docs = createSubsections(list);
                   <% sections.forEach(function (section) {
                     if (section.name) { %>
                       <li class="pl-header-nav-item ix-wrapper">
-                        <a href="#<%- section.name %>" class="link-inverted u-vertical-center-container"><%- section.title %></a>
+                        <a href="#<%- section.name %>" data-section="js-<%- section.name %>" class="js-sectionNav link-inverted u-vertical-center-container"><%- section.title %></a>
                       </li>
                     <% }
                   }); %>
@@ -92,43 +94,60 @@ var docs = createSubsections(list);
   </header>
 
   <div class="container-fluid">
-    <% function renderSection(section) { %>
-      <div class="row" id="<%- section.name %>">
-        <nav class="nav-sidebar col-sm-3 hide-when-sm">
-          <ul class="list-style-none">
-            <% function renderNavSubsections(subsections) {
-                subsections.forEach(function(subsection) { %>
-                <li><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
-              <% });
-            } %>
-            <% renderNavSubsections(section.subsections) %>
-          </ul>
-        </nav>
-        <main class="pl-main col-sm-12 col-md-8">
-        <% function renderSubsections(subsections) {
-          subsections.forEach(function(subsection) { %>
-            <div id="<%- subsection.name %>">
-            <% function renderChildren(children) {
-              children.forEach(function(child) {
-              %>
-                <div class="dashboard-section">
-                  <div class="header body-text-sm label"><%- subsection.title %>: <%- child.title %></div>
-                  <div class="panel">
-                    <%- child.content %>
-                  </div>
-                </div>
-                <% }); %>
-              <% } %>
-              <% renderChildren(subsection.children) %>
-            </div>
-          <% }); %>
+    <% function renderSections(docs) {
+      docs.forEach(function(section, index, array) { %>
+        <% if (array.indexOf(section) === 0) { %>
+          <div class="js-<%- section.name %> js-section row" id="<%- section.name %>">
+        <% } else { %>
+          <div class="js-<%- section.name %> js-section row is-hidden" id="<%- section.name %>">
         <% } %>
+          <nav class="nav-sidebar col-sm-3 hide-when-sm">
+            <ul class="list-style-none">
+              <% function renderNavSubsections(subsections) {
+                  subsections.forEach(function(subsection) { %>
+                  <li><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
+                <% });
+              } %>
+              <% renderNavSubsections(section.subsections) %>
+            </ul>
+          </nav>
+          <main class="pl-main col-sm-12 col-md-8">
+          <% function renderSubsections(subsections) {
+            subsections.forEach(function(subsection) { %>
+              <div id="<%- subsection.name %>">
+              <% function renderChildren(children) {
+                children.forEach(function(child) {
+                %>
+                  <div class="dashboard-section">
+                    <div class="header body-text-sm label no-margin-bottom"><%- subsection.title %>: <%- child.title %></div>
+                    <div class="panel">
+                      <%- child.content %>
+                    </div>
+                  </div>
+                  <% }); %>
+                <% } %>
+                <% renderChildren(subsection.children) %>
+              </div>
+            <% }); %>
+          <% } %>
 
-        <% renderSubsections(section.subsections) %>
-        </main>
-      </div>
+          <% renderSubsections(section.subsections) %>
+          </main>
+        </div>
+      <% }); %>
     <% } %>
-
-    <% docs.forEach(renderSection) %>
+    <% renderSections(docs); %>
   </div>
+
+  <script>
+  $('.js-sectionNav').bind('click', function(e) {
+    e.preventDefault();
+
+    var currentSection = $(e.currentTarget).data('section'),
+        $sectionContainer = $('.' + currentSection);
+
+    $('.js-section').addClass('is-hidden');
+    $sectionContainer.removeClass('is-hidden');
+  });
+  </script>
 </body>

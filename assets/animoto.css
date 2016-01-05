@@ -43,3 +43,10 @@ iframe {
 
   height: 120px;
 }
+
+
+
+/* shame */
+.pattern-library .panel p {
+  margin-top: 0;
+}
