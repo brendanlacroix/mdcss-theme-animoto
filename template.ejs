@@ -49,6 +49,7 @@ var docs = createSubsections(list);
   <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/nouislider.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/spectrum-1.7.1.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/tooltip-theme-arrows.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/icons/icons.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/chimera/chimera.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/jquery.magnific-popup.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.css" type="text/css" rel="stylesheet" />
@@ -67,26 +68,25 @@ var docs = createSubsections(list);
     <nav>
       <div class="container-fluid">
         <div class="row">
-          <div class="col-sm-12 col-md-4">
-            <a href="/" class="hide-text" style="background-image: url('<%- opts.logo || themeopts.logo %>');"><%- opts.title || themeopts.title %></a>
+          <div class="col-sm-12 col-md-4 plh-header-height plh-logo-wrapper">
+            <a href="/" class="pl-hide-text plh-header-height plh-logo" style="background-image: url('<%- opts.logo || themeopts.logo %>');"><%- opts.title || themeopts.title %></a>
           </div>
 
           <div class="col-sm-12 col-md-8">
-            <div class="body-text-sm label text-right">
-              <% function renderNavSections(sections) { %>
-                <ul class="list-style-none">
-                  <% sections.forEach(function (section) {
-                    if (section.name) { %>
-                      <li class="pl-header-nav-item ix-wrapper">
-                        <a href="#<%- section.name %>" data-section="js-<%- section.name %>" class="js-sectionNav link-inverted u-vertical-center-container"><%- section.title %></a>
-                      </li>
-                    <% }
-                  }); %>
-                </ul>
-              <% } %>
+            <% function renderNavSections(sections) { %>
+              <ul class="list-style-none body-text-sm label plh-navigation">
+                <% sections.forEach(function (section, index, array) {
+                  if (section.name) { %>
+                    <li data-section="js-<%- section.name %>" class="js-sectionNav ix-wrapper plh-header-height plh-nav-item <% if (array.indexOf(section) === 0) { %> is-selected <% } %>">
+                      <a href="#<%- section.name %>" class="link-inverted u-vertical-center-container"><%- section.title %></a>
+                      <div class="plh-selected-border plh-header-height"></div>
+                    </li>
+                  <% }
+                }); %>
+              </ul>
+            <% } %>
 
-              <% renderNavSections(docs) %>
-            </div>
+            <% renderNavSections(docs) %>
           </div>
         </div>
       </div>
@@ -96,16 +96,12 @@ var docs = createSubsections(list);
   <div class="container-fluid">
     <% function renderSections(docs) {
       docs.forEach(function(section, index, array) { %>
-        <% if (array.indexOf(section) === 0) { %>
-          <div class="js-<%- section.name %> js-section row" id="<%- section.name %>">
-        <% } else { %>
-          <div class="js-<%- section.name %> js-section row is-hidden" id="<%- section.name %>">
-        <% } %>
+          <div class="js-<%- section.name %> js-section row <% if (array.indexOf(section) !== 0) { %> is-hidden <% } %>" id="<%- section.name %>">
           <nav class="nav-sidebar col-sm-3 hide-when-sm">
             <ul class="list-style-none">
               <% function renderNavSubsections(subsections) {
-                  subsections.forEach(function(subsection) { %>
-                  <li><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
+                  subsections.forEach(function(subsection, index, array) { %>
+                  <li class="ix-wrapper"><span class="icon-right-primary icon-small <% if (array.indexOf(subsection) !== 0) { %> is-hidden<% } %>"></span><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
                 <% });
               } %>
               <% renderNavSubsections(section.subsections) %>
@@ -143,11 +139,15 @@ var docs = createSubsections(list);
   $('.js-sectionNav').bind('click', function(e) {
     e.preventDefault();
 
-    var currentSection = $(e.currentTarget).data('section'),
+    var $target           = $(e.currentTarget),
+        currentSection    = $target.data('section'),
         $sectionContainer = $('.' + currentSection);
 
     $('.js-section').addClass('is-hidden');
+    $('.js-sectionNav').removeClass('is-selected');
+
     $sectionContainer.removeClass('is-hidden');
+    $target.addClass('is-selected');
   });
   </script>
 </body>

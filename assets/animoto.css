@@ -12,15 +12,39 @@ iframe {
   left: 0;
   right: 0;
 
-  height: 72px;
   margin-bottom: 24px;
 
   background-color: #282828;
 }
+.pattern-library-header,
+.plh-header-height {
+  height: 72px;
+}
+.plh-logo-wrapper,
+.plh-navigation,
+.plh-nav-item {
+  display: flex;
+  align-items: center;
+}
+.plh-logo {
+  display: block;
+  width: 137px;
+  height: 32px;
+}
+.plh-navigation {
+  justify-content: flex-end;
+}
+.plh-nav-item {
+  position: relative;
 
-.pl-header-nav-item {
-  display: inline-block;
   padding: 0 8px;
+}
+.plh-nav-item.is-selected .plh-selected-border {
+  position: absolute;
+  left: 0;
+
+  width: 100%;
+  border-bottom: 4px solid #1bcdcf;
 }
 
 .pattern-library .panel {
@@ -49,4 +73,12 @@ iframe {
 /* shame */
 .pattern-library .panel p {
   margin-top: 0;
+}
+.pl-hide-text {
+  font: 0/0 serif;
+  text-shadow: none;
+  color: transparent;
+  overflow: hidden;
+  text-indent: 100%;
+  white-space: nowrap;
 }
