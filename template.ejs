@@ -3,9 +3,11 @@ function createSubsections(docs) {
   var subsections = [];
 
   docs.forEach(function(section) {
+    var children = section.children;
+
     section.subsections = [];
 
-    section.children.forEach(function(child) {
+    children.forEach(function(child, index, array) {
       var subsection,
           subsectionExists;
 
@@ -101,7 +103,7 @@ var docs = createSubsections(list);
             <ul class="list-style-none">
               <% function renderNavSubsections(subsections) {
                   subsections.forEach(function(subsection, index, array) { %>
-                  <li class="ix-wrapper"><span class="icon-right-primary icon-small <% if (array.indexOf(subsection) !== 0) { %> is-hidden<% } %>"></span><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
+                  <li class="ix-wrapper"><span class="icon-right-primary icon-small <% if (array.indexOf(subsection) !== 0) { %> is-invisible<% } %>"></span><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
                 <% });
               } %>
               <% renderNavSubsections(section.subsections) %>
