@@ -1,4 +1,5 @@
 var ejs  = require('ejs');
+var ext  = require('object-assign');
 var fs   = require('fs');
 var path = require('path');
 
@@ -8,6 +9,17 @@ module.exports = function (themeopts) {
 
 	// set theme logo
 	themeopts.logo = themeopts.logo || 'https://i.imgur.com/3rqeZXi.png';
+
+	// set example conf
+	themeopts.examples = ext({
+		base:    '',
+		target:  '_self',
+		css:     ['style.css'],
+		js:      [],
+		bodyjs:  [],
+		htmlcss: 'background:none;border:0;clip:auto;display:block;height:auto;margin:0;padding:0;position:static;width:auto',
+		bodycss: 'background:none;border:0;clip:auto;display:block;height:auto;margin:0;padding:16px 0;position:static;width:auto'
+	}, themeopts.examples);
 
 	// set theme title
 	themeopts.title = themeopts.title || 'Pattern library';
@@ -28,6 +40,8 @@ module.exports = function (themeopts) {
 				// throw if template could not be read
 				if (error) reject(error);
 				else {
+					docs.opts = ext({}, docs.opts, docs.themeopts);
+
 					// set compiled template
 					docs.template = ejs.compile(contents)(docs);
 

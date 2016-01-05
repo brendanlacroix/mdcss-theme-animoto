@@ -1,77 +1,134 @@
-<!doctype html>
-<title><%- opts.title || themeopts.title %></title>
-<meta charset="utf-8">
-<link href="style.css" rel="stylesheet">
-<script src="prism.js"></script>
-<script src="script.js"></script>
-<header>
-	<nav>
-		<img src="<%- opts.logo || themeopts.logo %>" alt="Style Guide">
-		<%
+<%
+function createSubsections(docs) {
+  var subsections = [];
 
-		function renderNavigation(children, depth) { %>
-			<ul><%
+  docs.forEach(function(section) {
+    section.subsections = [];
 
-				if (depth < 3) children.forEach(function (child) {
-					if (child.name) {
+    section.children.forEach(function(child) {
+      var subsection,
+          subsectionExists;
 
-						%>
-						<li>
-							<a href="#<%- child.name %>"><span><%- child.title %></span></a>
-							<%
+      if (!child.subsection) {
+        return;
+      }
 
-							if (child.children) renderNavigation(child.children, depth + 1);
+      subsectionExists = section.subsections.filter(function(sub) {
+        return sub.title === child.subsection;
+      });
 
-							%>
-						</li>
-						<%
+      if (subsectionExists.length) {
+        subsection = subsectionExists[0];
+      } else {
+        subsection = {
+          title    : child.subsection,
+          children : []
+        };
 
-					}
-				});
+        section.subsections.push(subsection);
+        subsection.parent = section;
+        subsection.name = section.name + '-' + subsection.title.replace(/\s+/g, '-').replace(/[^A-z0-9_-]/g, '').toLowerCase();
+      }
 
-			%></ul>
-		<% }
+      subsection.children.push(child);
+    });
+  });
 
-		renderNavigation(list, 1);
-		%>
-	</nav>
-</header>
-<main><%
-
-function renderSections(children, depth) {
-	children.forEach(function (child) {
-		if (child.name) { %>
-			<section id="<%= child.name %>">
-				<h<%= depth %> class="doc-section-heading"><%= child.title %></h<%= depth %>>
-
-				<div>
-					<%- child.content %>
-					<%
-
-					if (child.children) {
-						renderSections(child.children, depth + 1);
-					}
-
-					%>
-				</div>
-			</section>
-		<% } else { %>
-			<section>
-				<div>
-					<%- child.content %>
-					<%
-
-					if (child.children) {
-						renderSections(child.children, depth + 1);
-					}
-
-					%>
-				</div>
-			</section>
-		<% }
-	});
+  return docs;
 }
 
-renderSections(list, 2);
+var docs = createSubsections(list);
+%>
 
-%></main>
+<!doctype html>
+<head>
+  <title><%- opts.title || themeopts.title %></title>
+  <meta charset="utf-8" />
+
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/base/normalize.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/nouislider.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/spectrum-1.7.1.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/tooltip-theme-arrows.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/chimera/chimera.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/jquery.magnific-popup.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.css" type="text/css" rel="stylesheet" />
+  <link href="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/animoto.css" type="text/css" rel="stylesheet" />
+
+  <script>examples=<%- JSON.stringify(opts.examples) %>;</script>
+
+  <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.js"></script>
+  <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/examples.js"></script>
+  <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/script.js"></script>
+</head>
+<body class="pattern-library">
+  <header class="global-header pattern-library-header">
+    <nav>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-4">
+            <a href="/" class="hide-text" style="background-image: url('<%- opts.logo || themeopts.logo %>');"><%- opts.title || themeopts.title %></a>
+          </div>
+
+          <div class="col-sm-12 col-md-8">
+            <div class="body-text-sm label text-right">
+              <% function renderNavSections(sections) { %>
+                <ul class="list-style-none">
+                  <% sections.forEach(function (section) {
+                    if (section.name) { %>
+                      <li class="pl-header-nav-item ix-wrapper">
+                        <a href="#<%- section.name %>" class="link-inverted u-vertical-center-container"><%- section.title %></a>
+                      </li>
+                    <% }
+                  }); %>
+                </ul>
+              <% } %>
+
+              <% renderNavSections(docs) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container-fluid">
+    <% function renderSection(section) { %>
+      <div class="row" id="<%- section.name %>">
+        <nav class="nav-sidebar col-sm-3 hide-when-sm">
+          <ul class="list-style-none">
+            <% function renderNavSubsections(subsections) {
+                subsections.forEach(function(subsection) { %>
+                <li><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
+              <% });
+            } %>
+            <% renderNavSubsections(section.subsections) %>
+          </ul>
+        </nav>
+        <main class="pl-main col-sm-12 col-md-8">
+        <% function renderSubsections(subsections) {
+          subsections.forEach(function(subsection) { %>
+            <div id="<%- subsection.name %>">
+            <% function renderChildren(children) {
+              children.forEach(function(child) {
+              %>
+                <div class="dashboard-section">
+                  <div class="header body-text-sm label"><%- subsection.title %>: <%- child.title %></div>
+                  <div class="panel">
+                    <%- child.content %>
+                  </div>
+                </div>
+                <% }); %>
+              <% } %>
+              <% renderChildren(subsection.children) %>
+            </div>
+          <% }); %>
+        <% } %>
+
+        <% renderSubsections(section.subsections) %>
+        </main>
+      </div>
+    <% } %>
+
+    <% docs.forEach(renderSection) %>
+  </div>
+</body>
