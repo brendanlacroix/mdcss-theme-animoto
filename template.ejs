@@ -29,7 +29,7 @@ function createSubsections(docs) {
 
         section.subsections.push(subsection);
         subsection.parent = section;
-        subsection.name = section.name + '-' + subsection.title.replace(/\s+/g, '-').replace(/[^A-z0-9_-]/g, '').toLowerCase();
+        subsection.name = section.name + '_' + subsection.title.replace(/\s+/g, '-').replace(/[^A-z0-9_-]/g, '').toLowerCase();
       }
 
       subsection.children.push(child);
@@ -47,18 +47,18 @@ var docs = createSubsections(list);
   <title><%- opts.title || themeopts.title %></title>
   <meta charset="utf-8" />
 
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/base/normalize.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/nouislider.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/spectrum-1.7.1.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/vendor/tooltip-theme-arrows.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/icons/icons.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/chimera/chimera.css" type="text/css" rel="stylesheet" />
-  <link href="file:///Users/brendanlacroix/animoto/stack/applications/web2/public/stylesheets/animoto/vendor/jquery.magnific-popup.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/normalize.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/nouislider.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/spectrum-1.7.1.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/tooltip-theme-arrows.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/icons.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/chimera.css" type="text/css" rel="stylesheet" />
+  <link href="stylesheets/jquery.magnific-popup.css" type="text/css" rel="stylesheet" />
+
   <link href="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.css" type="text/css" rel="stylesheet" />
   <link href="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/animoto.css" type="text/css" rel="stylesheet" />
 
   <script>examples=<%- JSON.stringify(opts.examples) %>;</script>
-
 
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="file:///Users/brendanlacroix/repos/mdcss-theme-animoto/assets/prism.js"></script>
@@ -94,13 +94,14 @@ var docs = createSubsections(list);
       </div>
     </nav>
   </header>
+  <div class="plh-placeholder plh-header-height"></div>
 
-  <div class="container-fluid">
+  <div class="container">
     <% function renderSections(docs) {
       docs.forEach(function(section, index, array) { %>
-          <div class="js-<%- section.name %> js-section row <% if (array.indexOf(section) !== 0) { %> is-hidden <% } %>" id="<%- section.name %>">
-          <nav class="nav-sidebar col-sm-3 hide-when-sm">
-            <ul class="list-style-none">
+        <div class="js-<%- section.name %> js-section row <% if (array.indexOf(section) !== 0) { %> is-hidden <% } %>" id="<%- section.name %>">
+          <nav class="col-sm-2 hide-when-sm">
+            <ul class="nav-sidebar-list list-style-none grey-links label body-text-sm">
               <% function renderNavSubsections(subsections) {
                   subsections.forEach(function(subsection, index, array) { %>
                   <li class="ix-wrapper"><span class="icon-right-primary icon-small <% if (array.indexOf(subsection) !== 0) { %> is-invisible<% } %>"></span><a href="#<%-subsection.name%>"><%- subsection.title %></a></li>
@@ -108,28 +109,32 @@ var docs = createSubsections(list);
               } %>
               <% renderNavSubsections(section.subsections) %>
             </ul>
+            &nbsp; <!-- Preserves spacing (.nav-sidebar-list is fixed) -->
           </nav>
-          <main class="pl-main col-sm-12 col-md-8">
-          <% function renderSubsections(subsections) {
-            subsections.forEach(function(subsection) { %>
-              <div id="<%- subsection.name %>">
-              <% function renderChildren(children) {
-                children.forEach(function(child) {
-                %>
-                  <div class="dashboard-section">
-                    <div class="header body-text-sm label no-margin-bottom"><%- subsection.title %>: <%- child.title %></div>
-                    <div class="panel">
-                      <%- child.content %>
-                    </div>
+          <main class="pl-main col-sm-12 col-md-9">
+            <% function renderSubsections(subsections) {
+              subsections.forEach(function(subsection) { %>
+                <div id="<%- subsection.name %>" class="dashboard-section">
+                  <div class="header body-text-sm label no-margin-bottom">
+                    <%- subsection.title %>
                   </div>
-                  <% }); %>
-                <% } %>
-                <% renderChildren(subsection.children) %>
-              </div>
-            <% }); %>
-          <% } %>
-
-          <% renderSubsections(section.subsections) %>
+                  <% function renderChildren(children) {
+                    children.forEach(function(child) {
+                      if (child.nocontainer) { %>
+                        <%- child.content %>
+                      <% } else { %>
+                        <div class="panel">
+                          <h4><%- child.title %></h4>
+                          <%- child.content %>
+                        </div>
+                      <% } %>
+                    <% }); %>
+                  <% } %>
+                  <% renderChildren(subsection.children) %>
+                </div>
+              <% }); %>
+            <% } %>
+            <% renderSubsections(section.subsections) %>
           </main>
         </div>
       <% }); %>
